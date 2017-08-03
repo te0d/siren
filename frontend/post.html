@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>A Post</title>
+	<script src="http://127.0.0.1:8080/ipfs/Qmcq3qA3V9PTcb6rHuCHM3vGk6fA9oc1jrYvREfpKqsuis"></script>
+</head>
+<body>
+	<h1 id="page-title">Title</h1>
+
+	<div id="content"></div>
+
+	<script>
+var req = new XMLHttpRequest();
+var postName = document.location.search.slice(1);
+var pageTitle = document.getElementById('page-title');
+pageTitle.innerHTML = postName;
+var url = "./posts/" + postName;
+req.open('GET', url, true);
+req.addEventListener("load", function() {
+	if (req.status < 400) {
+		var md = req.responseText;
+		var converter = new showdown.Converter();
+		var html = converter.makeHtml(md);
+		var content = document.getElementById('content');
+		content.innerHTML = html;
+	}
+});
+req.send(null);
+	</script>
+</body>
+</html>

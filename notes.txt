@@ -1,0 +1,3 @@
+* add ability to customize title, username, styling
+* add layouts to present content
+* clean up
