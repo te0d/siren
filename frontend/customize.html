@@ -1,5 +1,37 @@
-Title: <input type="text" name="title"><br>
+<script src="http://127.0.0.1:8080/ipfs/QmfHjyNuL9pC8kQUpMHTdqPfBhohpidvrBPonTiXJUZqv5"></script>
+<script>
+function customize() {
+	var currentHash = document.location.pathname.split('/')[2];
+	var newTitleEl = document.getElementById('new-title');
+	var newConfig = { "Title": newTitleEl.value, "Username": "Unnamed User" };
+	var req = new XMLHttpRequest();
+	var url =  "http://127.0.0.1:8080/ipfs/" + currentHash + "/config.json";
+	req.open('PUT', url, true);
+	req.addEventListener("load", function() {
+		// FIXME:  check for error ya dummy
+		var newHash = req.getResponseHeader("Ipfs-Hash");
+		var newUrl = "http://127.0.0.1:8080/ipfs/" + newHash;
+		web3 = new Web3(web3.currentProvider);
+		abi = ([ { "constant": true, "inputs": [], "name": "resolve", "outputs": [ { "name": "", "type": "string", "value": "QmSw5w2DeF4UccR45Rcsx3L3oNCDuYCL8My4uHdj7pNZsv" } ], "payable": false, "type": "function" }, { "constant": false, "inputs": [ { "name": "_target", "type": "string" } ], "name": "update", "outputs": [], "payable": false, "type": "function" }, { "constant": false, "inputs": [], "name": "kill", "outputs": [], "payable": false, "type": "function" }, { "inputs": [ { "name": "_target", "type": "string", "index": 0, "typeShort": "string", "bits": "", "displayName": "&thinsp;<span class=\"punctuation\">_</span>&thinsp;target", "template": "elements_input_string", "value": "QmSw5w2DeF4UccR45Rcsx3L3oNCDuYCL8My4uHdj7pNZsv" } ], "payable": false, "type": "constructor" } ]);
+		contract = web3.eth.contract(abi)
+		instance = contract.at("0xd1E42EdcB67e07541B2Cae0eC259d24642E4E436");
+		var account = "";
+		web3.eth.getAccounts(function(e, a) {
+			account = a[0];
+			instance.update(newHash, web3.eth.getBlockNumber(), {from: account}, function() { console.log("hi"); });
+		});
+		instance.update(newHash, web3.eth.getBlockNumber(), {from: "0x86F01c7DD570879Db8E3BD4cB0D01cc76f5dcC7e"}, function() { console.log("hi"); });
+		window.location.replace("http://127.0.0.1:8080/ipfs/" + newHash);
+	});
+	req.send(JSON.stringify(newConfig));
+	// evt.preventDefault();
+}
+</script>
+
+Title: <input type="text" name="title" id="new-title"><br>
 Your Name: <input type="text" name="username"><br>
 <!--
 Stylesheet: <input type="text" name="stylesheet"><br>
 -->
+
+<button onclick="customize()">Customize</button>
