@@ -1,9 +1,16 @@
 // handle customization
+var contractId = "";
 var customizeReq = new XMLHttpRequest();
 customizeReq.open('GET', "config.json", true);
 customizeReq.addEventListener("load", function() {
 	if (customizeReq.status < 300) {
 		var json = JSON.parse(customizeReq.responseText);
+		if (json.Contract != null) {
+			contractId = json.Contract;
+			var homeLink = document.getElementById("home-link");
+			homeLink.href = "http://127.0.0.1:8080/ipfs/QmPJZ8k4thxnoYEPJZGPaBCSvrmgkByJLUw8ZfSXobRRto?" + contractId;
+		}
+
 		if (json.Title != null) {
 			var pageTitle = document.getElementById("page-title");
 			pageTitle.innerHTML = json.Title;
@@ -53,14 +60,11 @@ form.addEventListener("submit", function(evt) {
 		web3 = new Web3(web3.currentProvider);
 		abi = ([ { "constant": true, "inputs": [], "name": "resolve", "outputs": [ { "name": "", "type": "string", "value": "QmSw5w2DeF4UccR45Rcsx3L3oNCDuYCL8My4uHdj7pNZsv" } ], "payable": false, "type": "function" }, { "constant": false, "inputs": [ { "name": "_target", "type": "string" } ], "name": "update", "outputs": [], "payable": false, "type": "function" }, { "constant": false, "inputs": [], "name": "kill", "outputs": [], "payable": false, "type": "function" }, { "inputs": [ { "name": "_target", "type": "string", "index": 0, "typeShort": "string", "bits": "", "displayName": "&thinsp;<span class=\"punctuation\">_</span>&thinsp;target", "template": "elements_input_string", "value": "QmSw5w2DeF4UccR45Rcsx3L3oNCDuYCL8My4uHdj7pNZsv" } ], "payable": false, "type": "constructor" } ]);
 		contract = web3.eth.contract(abi)
-		instance = contract.at("0xd1E42EdcB67e07541B2Cae0eC259d24642E4E436");
-		var account = "";
+		instance = contract.at(contractId);
 		web3.eth.getAccounts(function(e, a) {
-			account = a[0];
-			instance.update(newHash, web3.eth.getBlockNumber(), {from: account}, function() { console.log("hi"); });
+			instance.update(newHash, web3.eth.getBlockNumber(), {from: a[0]}, function() { console.log("hi"); });
+			window.location.replace("http://127.0.0.1:8080/ipfs/" + newHash);
 		});
-		instance.update(newHash, web3.eth.getBlockNumber(), {from: "0x86F01c7DD570879Db8E3BD4cB0D01cc76f5dcC7e"}, function() { console.log("hi"); });
-		window.location.replace("http://127.0.0.1:8080/ipfs/" + newHash);
 	});
 	req.send(form.elements.content.value);
 	evt.preventDefault();

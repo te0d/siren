@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Dag Nabbit</title>
+		<script src="http://127.0.0.1:8080/ipfs/QmfHjyNuL9pC8kQUpMHTdqPfBhohpidvrBPonTiXJUZqv5"></script>
+	</head>
+	<body>
+		<form action="javascript:void(0);">
+			Blog Name: <input type="text" name="name"><br>
+			<button onclick="onDeploy()">Deploy</button>
+		</form>
+
+		<script>
+function onDeploy() {
+	// Create Contract
+	var _target = "QmVU3mW8ZHSa9azeDUwKPVFYCeNenyopEwqvxeXiBLqQaL";
+	web3 = new Web3(web3.currentProvider);
+	var resolverContract = web3.eth.contract([{"constant":true,"inputs":[],"name":"resolve","outputs":[{"name":"","type":"string"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_target","type":"string"}],"name":"update","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"kill","outputs":[],"payable":false,"type":"function"},{"inputs":[{"name":"_target","type":"string"}],"payable":false,"type":"constructor"}]);
+	web3.eth.getAccounts(function(e, a) {
+		var resolver = resolverContract.new(
+			_target,
+			{
+				from: a[0], 
+				data: '0x6060604052341561000f57600080fd5b604051610526380380610526833981016040528080518201919050505b5b336000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055505b806001908051906020019061008492919061008c565b505b50610131565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f106100cd57805160ff19168380011785556100fb565b828001600101855582156100fb579182015b828111156100fa5782518255916020019190600101906100df565b5b509050610108919061010c565b5090565b61012e91905b8082111561012a576000816000905550600101610112565b5090565b90565b6103e6806101406000396000f30060606040526000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680632810e1d6146100545780633d7403a3146100e357806341c0e1b514610140575b600080fd5b341561005f57600080fd5b610067610155565b6040518080602001828103825283818151815260200191508051906020019080838360005b838110156100a85780820151818401525b60208101905061008c565b50505050905090810190601f1680156100d55780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b34156100ee57600080fd5b61013e600480803590602001908201803590602001908080601f016020809104026020016040519081016040528093929190818152602001838380828437820191505050505050919050506101fe565b005b341561014b57600080fd5b61015361026f565b005b61015d610301565b60018054600181600116156101000203166002900480601f0160208091040260200160405190810160405280929190818152602001828054600181600116156101000203166002900480156101f35780601f106101c8576101008083540402835291602001916101f3565b820191906000526020600020905b8154815290600101906020018083116101d657829003601f168201915b505050505090505b90565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff16141561026b578060019080519060200190610269929190610315565b505b5b50565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614156102fe576000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16ff5b5b565b602060405190810160405280600081525090565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f1061035657805160ff1916838001178555610384565b82800160010185558215610384579182015b82811115610383578251825591602001919060010190610368565b5b5090506103919190610395565b5090565b6103b791905b808211156103b357600081600090555060010161039b565b5090565b905600a165627a7a723058200ebd1a8c2e8bf2217362cb498b94938c2bf32a85682bbb7a3f0d96e34d26d8170029', 
+				gas: '4700000'
+			}, function (e, contract){
+				console.log(e, contract);
+				if (typeof contract.address !== 'undefined') {
+					// generate new config
+					var form = document.querySelector("form");
+					var newConfig = JSON.stringify({"Contract": contract.address, "Title": form.elements.name.value, "Username": "The User"});
+					var req = new XMLHttpRequest();
+					var url =  "http://127.0.0.1:8080/ipfs/QmUq7xnf5dBWgcKrKjyvn17AHZcGmGkJu5AvVY1tpfA2Ep/config.json";
+					req.open('PUT', url, true);
+					req.addEventListener("load", function() {
+						// FIXME:  check for error ya dummy
+						var newHash = req.getResponseHeader("Ipfs-Hash");
+						var newUrl = "http://127.0.0.1:8080/ipfs/" + newHash;
+						web3.eth.getAccounts(function(e, a) {
+							contract.update(newHash, web3.eth.getBlockNumber(), {from: a[0]}, function() { console.log("hi"); });
+						});
+						window.location.replace("http://127.0.0.1:8080/ipfs/" + newHash);
+					});
+					req.send(newConfig);
+				}
+			})
+	});
+}
+		</script>
+	</body>
+</html>
